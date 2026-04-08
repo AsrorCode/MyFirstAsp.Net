@@ -5,16 +5,14 @@ namespace MyFirstAsp.Net.Data
 {
     public class DapperContext
     {
-        private readonly IConfiguration _config;
+        private readonly string _connectionString;
 
         public DapperContext(IConfiguration config)
         {
-            _config = config;
+            _connectionString = config.GetConnectionString("DefaultConnection");
         }
 
         public IDbConnection CreateConnection()
-        {
-            return new SqlConnection(_config.GetConnectionString("DefaultConnection"));
-        }
+            => new SqlConnection(_connectionString);
     }
 }

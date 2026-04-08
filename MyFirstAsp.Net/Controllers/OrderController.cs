@@ -1,9 +1,7 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using MyFirstAsp.Net.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using MyFirstAsp.Net.Interfaces;
 using MyFirstAsp.Net.Models;
-using System.Data;
+using MyFirstAsp.Net.Services;
 
 namespace MyFirstAsp.Net.Controllers
 {
@@ -11,81 +9,47 @@ namespace MyFirstAsp.Net.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly DapperContext _context;
-   
+        private readonly OrderService _service;
 
-        public OrderController(DapperContext context)
+        public OrderController(OrderService service)
         {
-            _context = context;
+            _service = service;
         }
 
-        // GET ALL
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var query = "SELECT * FROM Orders";
-
-            using var connection = _context.CreateConnection();
-
-            var result = await connection.QueryAsync<Order>(query);
-
+            var result = await _service.GetAllOrdersAsync();
             return Ok(result);
         }
 
-        // GET BY ID
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var query = "SELECT * FROM Orders WHERE Id=@Id";
-
-            using var connection = _context.CreateConnection();
-            var result = await connection.QueryFirstOrDefaultAsync<Order>(query, new { Id = id });
-
-            if (result == null)
-                return NotFound();
-
+            var result = await _service.GetOrderByIdAsync(id);
+            if (result == null) return NotFound();
             return Ok(result);
         }
 
-        // CREATE
         [HttpPost]
         public async Task<IActionResult> Create(Order order)
         {
-            var query = "INSERT INTO Orders (ProductName, Quantity) VALUES (@ProductName, @Quantity)";
-
-            using var connection = _context.CreateConnection();
-            await connection.ExecuteAsync(query, order);
-
-            return Ok("Created");
+            await _service.CreateOrderAsync(order);
+            return Ok("Muvaffaqiyatli yaratildi!");
         }
 
-        // UPDATE
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Order order)
         {
-            var query = "UPDATE Orders SET ProductName=@ProductName, Quantity=@Quantity WHERE Id=@Id";
-
-            using var connection = _context.CreateConnection();
-            await connection.ExecuteAsync(query, new
-            {
-                order.ProductName,
-                order.Quantity,
-                Id = id
-            });
-
-            return Ok("Updated");
+            await _service.UpdateOrderAsync(id, order);
+            return Ok("Muvaffaqiyatli yangilandi!");
         }
 
-        // DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var query = "DELETE FROM Orders WHERE Id=@Id";
-
-            using var connection = _context.CreateConnection();
-            await connection.ExecuteAsync(query, new { Id = id });
-
-            return Ok("Deleted");
+            await _service.DeleteOrderAsync(id);
+            return Ok("O'chirib tashlandi!");
         }
     }
 }
