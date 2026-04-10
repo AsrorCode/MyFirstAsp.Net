@@ -3,11 +3,11 @@ using MyFirstAsp.Net.Models;
 
 namespace MyFirstAsp.Net.Services
 {
-    public class OrderService 
+    public class  IOrderService
     {
         private readonly IOrderRepository _repository;
 
-        public OrderService(IOrderRepository repository)
+        public IOrderService(IOrderRepository repository)
         {
             _repository = repository;
         }

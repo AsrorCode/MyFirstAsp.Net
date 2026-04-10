@@ -9,9 +9,10 @@ namespace MyFirstAsp.Net.Controllers
     [Route("api/[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly OrderService _service;
+        private readonly IOrderService _service;
+          
 
-        public OrderController(OrderService service)
+        public OrderController(IOrderService service)
         {
             _service = service;
         }
